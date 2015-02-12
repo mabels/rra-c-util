@@ -61,7 +61,7 @@ main(void)
     /* Basic environment manipulation. */
     if (pam_start("test", NULL, &conv, &pamh) != PAM_SUCCESS)
         sysbail("Fake PAM initialization failed");
-    is_int(PAM_BAD_ITEM, pam_putenv(pamh, "TEST"), "delete when NULL");
+    is_int(PAM_SYMBOL_ERR, pam_putenv(pamh, "TEST"), "delete when NULL");
     ok(pam_getenv(pamh, "TEST") == NULL, "getenv when NULL");
     env = pam_getenvlist(pamh);
     ok(env != NULL, "getenvlist when NULL returns non-NULL");
@@ -83,12 +83,12 @@ main(void)
     ok(pam_getenv(pamh, "BAZ") == NULL, "getenv BAZ is NULL");
 
     /* Replacing and deleting environment variables. */
-    is_int(PAM_BAD_ITEM, pam_putenv(pamh, "BAZ"), "putenv nonexistent delete");
+    is_int(PAM_SYMBOL_ERR, pam_putenv(pamh, "BAZ"), "putenv nonexistent delete");
     is_int(PAM_SUCCESS, pam_putenv(pamh, "FOO=foo"), "putenv replace");
     is_int(PAM_SUCCESS, pam_putenv(pamh, "FOON=bar=n"), "putenv prefix");
     is_string("foo", pam_getenv(pamh, "FOO"), "getenv FOO");
     is_string("bar=n", pam_getenv(pamh, "FOON"), "getenv FOON");
-    is_int(PAM_BAD_ITEM, pam_putenv(pamh, "FO"), "putenv delete FO");
+    is_int(PAM_SYMBOL_ERR, pam_putenv(pamh, "FO"), "putenv delete FO");
     is_int(PAM_SUCCESS, pam_putenv(pamh, "FOO"), "putenv delete FOO");
     ok(pam_getenv(pamh, "FOO") == NULL, "getenv FOO is NULL");
     is_string("bar=n", pam_getenv(pamh, "FOON"), "getenv FOON");

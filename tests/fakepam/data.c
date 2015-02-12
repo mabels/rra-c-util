@@ -74,7 +74,7 @@ pam_set_data(pam_handle_t *pamh, const char *item, void *data,
     for (p = pamh->data; p != NULL; p = p->next)
         if (strcmp(p->name, item) == 0) {
             if (p->cleanup != NULL)
-                p->cleanup (pamh, p->data, PAM_DATA_REPLACE);
+                p->cleanup (pamh, p->data, PAM_SUCCESS);
             p->data = data;
             p->cleanup = cleanup;
             return PAM_SUCCESS;
@@ -111,7 +111,7 @@ pam_get_item(const pam_handle_t *pamh, int item, PAM_CONST void **data)
             *data = pamh->conversation;
             return PAM_SUCCESS;
         } else {
-            return PAM_BAD_ITEM;
+            return PAM_SYMBOL_ERR;
         }
     case PAM_OLDAUTHTOK:
         *data = pamh->oldauthtok;
@@ -135,7 +135,7 @@ pam_get_item(const pam_handle_t *pamh, int item, PAM_CONST void **data)
         *data = "login: ";
         return PAM_SUCCESS;
     default:
-        return PAM_BAD_ITEM;
+        return PAM_SYMBOL_ERR;
     }
 }
 
@@ -181,7 +181,7 @@ pam_set_item(pam_handle_t *pamh, int item, PAM_CONST void *data)
         pamh->user = (const char *) data;
         return PAM_SUCCESS;
     default:
-        return PAM_BAD_ITEM;
+        return PAM_SYMBOL_ERR;
     }
 }
 
@@ -298,7 +298,7 @@ pam_putenv(pam_handle_t *pamh, const char *setting)
     /* Handle the first call to pam_putenv. */
     if (pamh->environ == NULL) {
         if (delete)
-            return PAM_BAD_ITEM;
+            return PAM_SYMBOL_ERR;
         pamh->environ = calloc(2, sizeof(char *));
         if (pamh->environ == NULL) {
             free(copy);
@@ -331,7 +331,7 @@ pam_putenv(pam_handle_t *pamh, const char *setting)
         }
     if (!found) {
         if (delete)
-            return PAM_BAD_ITEM;
+            return PAM_SYMBOL_ERR;
         env = reallocarray(pamh->environ, (i + 2), sizeof(char *));
         if (env == NULL)
             return PAM_BUF_ERR;
